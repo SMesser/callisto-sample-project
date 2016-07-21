@@ -18,37 +18,40 @@ from __future__ import absolute_import, unicode_literals
 from boto.s3.connection import OrdinaryCallingFormat
 from django.utils import six
 
-import logging
-
 
 from .common import *  # noqa
 
-# SECRET CONFIGURATION
-# ------------------------------------------------------------------------------
-# See: https://docs.djangoproject.com/en/dev/ref/settings/#secret-key
-# Raises ImproperlyConfigured exception if DJANGO_SECRET_KEY not in os.environ
-SECRET_KEY = env('DJANGO_SECRET_KEY')
 
 
 # This ensures that Django will be able to detect a secure connection
 # properly on Heroku.
 SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+
+# Order of INSTALLED_APPS sometimes matters
+INSTALLED_APPS = ('collectfast', ) + INSTALLED_APPS
+INSTALLED_APPS += (
+    'raven.contrib.django.raven_compat',
+    'opbeat.contrib.django',
+    'gunicorn',
+    'storages',
+    'anymail',
+)
+
 # raven sentry client
 # See https://docs.getsentry.com/hosted/clients/python/integrations/django/
-INSTALLED_APPS += ('raven.contrib.django.raven_compat', )
-RAVEN_MIDDLEWARE = ('raven.contrib.django.raven_compat.middleware.SentryResponseErrorIdMiddleware', )
-MIDDLEWARE_CLASSES = RAVEN_MIDDLEWARE + MIDDLEWARE_CLASSES
+
+MIDDLEWARE_CLASSES = (
+    'raven.contrib.django.raven_compat.middleware.SentryResponseErrorIdMiddleware',
+    'opbeat.contrib.django.middleware.OpbeatAPMMiddleware',
+) + MIDDLEWARE_CLASSES
+
 # opbeat integration
 # See https://opbeat.com/languages/django/
-INSTALLED_APPS += ('opbeat.contrib.django',)
 OPBEAT = {
     'ORGANIZATION_ID': env('DJANGO_OPBEAT_ORGANIZATION_ID'),
     'APP_ID': env('DJANGO_OPBEAT_APP_ID'),
     'SECRET_TOKEN': env('DJANGO_OPBEAT_SECRET_TOKEN')
 }
-MIDDLEWARE_CLASSES = (
-    'opbeat.contrib.django.middleware.OpbeatAPMMiddleware',
-) + MIDDLEWARE_CLASSES
 
 
 # SECURITY CONFIGURATION
@@ -77,17 +80,12 @@ X_FRAME_OPTIONS = 'DENY'
 ALLOWED_HOSTS = env.list('DJANGO_ALLOWED_HOSTS', default=['example.com'])
 # END SITE CONFIGURATION
 
-INSTALLED_APPS += ('gunicorn', )
-
 
 # STORAGE CONFIGURATION
 # ------------------------------------------------------------------------------
 # Uploaded Media Files
 # ------------------------
 # See: http://django-storages.readthedocs.io/en/latest/index.html
-INSTALLED_APPS += (
-    'storages',
-)
 
 AWS_ACCESS_KEY_ID = env('DJANGO_AWS_ACCESS_KEY_ID')
 AWS_SECRET_ACCESS_KEY = env('DJANGO_AWS_SECRET_ACCESS_KEY')
@@ -127,7 +125,6 @@ STATICFILES_STORAGE = 'config.settings.production.StaticRootS3BotoStorage'
 # For Django 1.7+, 'collectfast' should come before
 # 'django.contrib.staticfiles'
 AWS_PRELOAD_METADATA = True
-INSTALLED_APPS = ('collectfast', ) + INSTALLED_APPS
 
 # EMAIL
 # ------------------------------------------------------------------------------
@@ -137,7 +134,6 @@ EMAIL_SUBJECT_PREFIX = env('DJANGO_EMAIL_SUBJECT_PREFIX', default='[Callisto Sam
 SERVER_EMAIL = env('DJANGO_SERVER_EMAIL', default=DEFAULT_FROM_EMAIL)
 
 # Anymail with Mailgun
-INSTALLED_APPS += ("anymail", )
 ANYMAIL = {
     "MAILGUN_API_KEY": env('DJANGO_MAILGUN_API_KEY'),
 }
@@ -244,6 +240,3 @@ WEBPACK_LOADER = {
         'STATS_FILE': STATS_FILE
     }
 }
-
-
-# Your production stuff: Below this line define 3rd party library settings

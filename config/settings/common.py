@@ -11,11 +11,26 @@ https://docs.djangoproject.com/en/dev/ref/settings/
 from __future__ import absolute_import, unicode_literals
 
 import environ
+import os
+
+from random import choice
+from string import printable
+from warnings import warn
 
 ROOT_DIR = environ.Path(__file__) - 3  # (callisto-sample-project/config/settings/common.py - 3 = callisto-sample-project/)
 APPS_DIR = ROOT_DIR.path('callisto_sample_project')
 
 env = environ.Env()
+# See: https://docs.djangoproject.com/en/dev/ref/settings/#secret-key
+try:
+    SECRET_KEY = env('DJANGO_SECRET_KEY')
+except KeyError:
+    SECRET_KEY = ''.join([choice(printable) for _ in xrange(30)])
+    warn(
+        'DJANGO_SECRET_KEY should be set as an environment variable to avoid forcibly logging out users when the server is restarted.'
+        'Using a randomly-generated DJANGO_SECRET_KEY.',
+        UserWarning
+    )
 
 # APP CONFIGURATION
 # ------------------------------------------------------------------------------
@@ -42,6 +57,7 @@ THIRD_PARTY_APPS = (
     'wizard_builder',
     'callisto.delivery',
     'callisto.evaluation',
+    'webpack_loader',
 )
 
 # Apps specific for this project go here.
@@ -77,16 +93,32 @@ MIGRATION_MODULES = {
 # See: https://docs.djangoproject.com/en/dev/ref/settings/#debug
 DEBUG = env.bool('DJANGO_DEBUG', False)
 
+# This low number is for testing purposes only, and is insufficient for production by several orders of magnitude
+KEY_ITERATIONS = 100
+
+
+def read_gpg_public_key(target_file):
+    with open(
+        os.path.join(
+            os.path.realpath(
+                os.path.join(os.getcwd(), os.path.dirname(__file__))
+            ),
+            target_file
+        ),
+        'r'
+    ) as key_file:
+        key_str = key_file.read()
+    return key_str
+
+
+PASSWORD_MINIMUM_ENTROPY = 35
+
 # FIXTURE CONFIGURATION
 # ------------------------------------------------------------------------------
 # See: https://docs.djangoproject.com/en/dev/ref/settings/#std:setting-FIXTURE_DIRS
 FIXTURE_DIRS = (
     str(APPS_DIR.path('fixtures')),
 )
-
-# EMAIL CONFIGURATION
-# ------------------------------------------------------------------------------
-EMAIL_BACKEND = env('DJANGO_EMAIL_BACKEND', default='django.core.mail.backends.smtp.EmailBackend')
 
 # MANAGER CONFIGURATION
 # ------------------------------------------------------------------------------
@@ -98,9 +130,6 @@ ADMINS = (
 # See: https://docs.djangoproject.com/en/dev/ref/settings/#managers
 MANAGERS = ADMINS
 
-# This is where reports from users will be sent. This is not the technical admin address. 
-# If this is not changed, no one will receive incident reports.
-COORDINATOR_EMAIL = 'coordinator@example.com'
 
 # DATABASE CONFIGURATION
 # ------------------------------------------------------------------------------
@@ -111,6 +140,16 @@ DATABASES = {
 }
 DATABASES['default']['ATOMIC_REQUESTS'] = True
 
+
+# CACHING
+# ------------------------------------------------------------------------------
+# Speed advantages of in-memory caching without having to run Memcached
+CACHES = {
+    'default': {
+        'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',
+        'LOCATION': ''
+    }
+}
 
 # GENERAL CONFIGURATION
 # ------------------------------------------------------------------------------
@@ -241,9 +280,6 @@ AUTOSLUG_SLUGIFY_FUNCTION = 'slugify.slugify'
 # Location of root django.contrib.admin URL, use {% url 'admin:index' %}
 ADMIN_URL = r'^admin/'
 
-# WEBPACK
-# ------------------------------------------------------------------------------
-INSTALLED_APPS += ('webpack_loader',)
 # Webpack Local Stats file
 STATS_FILE = ROOT_DIR('webpack-stats.json')
 # Webpack config
@@ -254,9 +290,22 @@ WEBPACK_LOADER = {
 }
 
 
-# Your common stuff: Below this line define 3rd party library settings
-CALLISTO_EVAL_PUBLIC_KEY = ''
-APP_URL = 'localhost'
-COORDINATOR_NAME = 'Jane Doe'
-SCHOOL_SHORTNAME = 'Respectful Org'
+MATCH_IMMEDIATELY = True
+PEPPER = os.urandom(32)
+
+# Your production stuff: Below this line define 3rd party library settings
 DECRYPT_THROTTLE_RATE = '1/min'
+
+# Your common stuff: Below this line define 3rd party library settings
+CALLISTO_EVAL_PUBLIC_KEY = read_gpg_public_key('callisto_eval_publickey.gpg')
+APP_URL = 'localhost'
+
+# This is where reports from users will be sent. This is not the technical admin address.
+# If this is not changed, no one will receive incident reports.
+COORDINATOR_PUBLIC_KEY = read_gpg_public_key('coordinator_publickey.gpg')
+COORDINATOR_EMAIL = 'coordinator@example.com'
+COORDINATOR_NAME = "Tatiana Nine"
+
+SCHOOL_SHORTNAME = 'Respectful Org'
+SCHOOL_REPORT_PREFIX = "000"
+SCHOOL_LONGNAME = "test"

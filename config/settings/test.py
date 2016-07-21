@@ -14,12 +14,6 @@ from .common import *  # noqa
 DEBUG = False
 TEMPLATES[0]['OPTIONS']['debug'] = False
 
-# SECRET CONFIGURATION
-# ------------------------------------------------------------------------------
-# See: https://docs.djangoproject.com/en/dev/ref/settings/#secret-key
-# Note: This key only used for development and testing.
-SECRET_KEY = env('DJANGO_SECRET_KEY', default='CHANGEME!!!')
-
 # Mail settings
 # ------------------------------------------------------------------------------
 EMAIL_HOST = 'localhost'
@@ -28,16 +22,6 @@ EMAIL_PORT = 1025
 # In-memory email backend stores messages in django.core.mail.outbox
 # for unit testing purposes
 EMAIL_BACKEND = 'django.core.mail.backends.locmem.EmailBackend'
-
-# CACHING
-# ------------------------------------------------------------------------------
-# Speed advantages of in-memory caching without having to run Memcached
-CACHES = {
-    'default': {
-        'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',
-        'LOCATION': ''
-    }
-}
 
 # TESTING
 # ------------------------------------------------------------------------------
@@ -60,3 +44,12 @@ TEMPLATES[0]['OPTIONS']['loaders'] = [
         'django.template.loaders.app_directories.Loader',
     ]),
 ]
+DECRYPT_THROTTLE_RATE = '100/min'
+
+# Your common stuff: Below this line define 3rd party library settings
+CALLISTO_EVAL_PUBLIC_KEY = read_gpg_public_key('test_publickey.gpg')
+APP_URL = 'localhost'
+
+# This is where reports from users will be sent. This is not the technical admin address.
+# If this is not changed, no one will receive incident reports.
+COORDINATOR_PUBLIC_KEY = read_gpg_public_key('test_publickey.gpg')
