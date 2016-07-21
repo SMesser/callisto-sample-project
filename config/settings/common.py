@@ -13,7 +13,7 @@ from __future__ import absolute_import, unicode_literals
 import environ
 
 ROOT_DIR = environ.Path(__file__) - 3  # (callisto-sample-project/config/settings/common.py - 3 = callisto-sample-project/)
-APPS_DIR = ROOT_DIR.path('callisto-sample-project')
+APPS_DIR = ROOT_DIR.path('callisto_sample_project')
 
 env = environ.Env()
 
@@ -39,12 +39,15 @@ THIRD_PARTY_APPS = (
     'allauth',  # registration
     'allauth.account',  # registration
     'allauth.socialaccount',  # registration
+    'wizard_builder',
+    'callisto.delivery',
+    'callisto.evaluation',
 )
 
 # Apps specific for this project go here.
 LOCAL_APPS = (
     # custom users app
-    'callisto-sample-project.users.apps.UsersConfig',
+    'callisto_sample_project.users.apps.UsersConfig',
     # Your stuff: custom apps go here
 )
 
@@ -66,7 +69,7 @@ MIDDLEWARE_CLASSES = (
 # MIGRATIONS CONFIGURATION
 # ------------------------------------------------------------------------------
 MIGRATION_MODULES = {
-    'sites': 'callisto-sample-project.contrib.sites.migrations'
+    'sites': 'callisto_sample_project.contrib.sites.migrations'
 }
 
 # DEBUG
@@ -89,11 +92,15 @@ EMAIL_BACKEND = env('DJANGO_EMAIL_BACKEND', default='django.core.mail.backends.s
 # ------------------------------------------------------------------------------
 # See: https://docs.djangoproject.com/en/dev/ref/settings/#admins
 ADMINS = (
-    ("""Kevin Daum""", 'kevin.daum@gmail.com'),
+    ("""Sexual Health Innovations""", 'tech@sexualhealthinnovations.org'),
 )
 
 # See: https://docs.djangoproject.com/en/dev/ref/settings/#managers
 MANAGERS = ADMINS
+
+# This is where reports from users will be sent. This is not the technical admin address. 
+# If this is not changed, no one will receive incident reports.
+COORDINATOR_EMAIL = 'coordinator@example.com'
 
 # DATABASE CONFIGURATION
 # ------------------------------------------------------------------------------
@@ -214,8 +221,8 @@ ACCOUNT_EMAIL_REQUIRED = True
 ACCOUNT_EMAIL_VERIFICATION = 'mandatory'
 
 ACCOUNT_ALLOW_REGISTRATION = env.bool('DJANGO_ACCOUNT_ALLOW_REGISTRATION', True)
-ACCOUNT_ADAPTER = 'callisto-sample-project.users.adapters.AccountAdapter'
-SOCIALACCOUNT_ADAPTER = 'callisto-sample-project.users.adapters.SocialAccountAdapter'
+ACCOUNT_ADAPTER = 'callisto_sample_project.users.adapters.AccountAdapter'
+SOCIALACCOUNT_ADAPTER = 'callisto_sample_project.users.adapters.SocialAccountAdapter'
 
 # Custom user app defaults
 # Select the correct user model
@@ -248,3 +255,8 @@ WEBPACK_LOADER = {
 
 
 # Your common stuff: Below this line define 3rd party library settings
+CALLISTO_EVAL_PUBLIC_KEY = ''
+APP_URL = 'localhost'
+COORDINATOR_NAME = 'Jane Doe'
+SCHOOL_SHORTNAME = 'Respectful Org'
+DECRYPT_THROTTLE_RATE = '1/min'

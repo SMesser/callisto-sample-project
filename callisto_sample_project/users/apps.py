@@ -2,7 +2,7 @@ from django.apps import AppConfig
 
 
 class UsersConfig(AppConfig):
-    name = 'callisto-sample-project.users'
+    name = 'callisto_sample_project.users'
     verbose_name = "Users"
 
     def ready(self):

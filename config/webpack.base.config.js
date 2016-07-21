@@ -42,12 +42,12 @@ module.exports = (opts) => {
     context: PROJECT_ROOT,
 
     entry: {
-      main: path.resolve(PROJECT_ROOT, 'callisto-sample-project/static/callisto-sample-project/index'),
+      main: path.resolve(PROJECT_ROOT, 'callisto_sample_project/static/callisto-sample-project/index'),
       vendor: ['react', 'redux', 'react-router', 'react-redux', 'react-dom'],
     },
 
     output: {
-      path: path.resolve(PROJECT_ROOT, 'callisto-sample-project/static/callisto-sample-project/bundles'),
+      path: path.resolve(PROJECT_ROOT, 'callisto_sample_project/static/callisto-sample-project/bundles'),
       filename: '[name]-[hash].js',
     },
 
@@ -70,7 +70,7 @@ module.exports = (opts) => {
     resolve: {
       extensions: ['', '.js', '.jsx'],
       modules: [
-        path.resolve(PROJECT_ROOT, 'callisto-sample-project/static/callisto-sample-project'),
+        path.resolve(PROJECT_ROOT, 'callisto_sample_project/static/callisto-sample-project'),
         'node_modules',
       ],
     },
