@@ -26,7 +26,7 @@ env = environ.Env()
 try:
     SECRET_KEY = env('DJANGO_SECRET_KEY')
 except ImproperlyConfigured:
-    SECRET_KEY = ''.join([choice(printable) for _ in xrange(30)])
+    SECRET_KEY = ''.join([choice(printable) for _ in range(30)])
     warn(
         'DJANGO_SECRET_KEY should be set as an environment variable to avoid forcibly logging out users when the server is restarted.'
         'Using a randomly-generated DJANGO_SECRET_KEY.',
