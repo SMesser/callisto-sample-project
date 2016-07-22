@@ -22,7 +22,7 @@ This project adheres to a code of conduct(https://github.com/SexualHealthInnovat
 Setting up a development environment
 ------------
 
-Install pip, virtualenv, and npm if you don't have them already.
+Install pip, virtualenv, virtualenvwrapper, and npm if you don't have them already.
 
 Clone this repo.
 
@@ -201,3 +201,28 @@ See detailed `cookiecutter-django Docker documentation`_.
 
 .. _`cookiecutter-django Docker documentation`: http://cookiecutter-django.readthedocs.io/en/latest/deployment-with-docker.html
 
+Quick `docker-compose` guide (for development):
+
+* Install `Docker`_ and `docker-compose`_. Note: the `Mac version of Docker`_ comes with ``docker-compose`` included. 
+
+* In one terminal, at the root of the project, run: ``docker-compose -f dev.yml up --build postgres``. It will take
+  some time for postgres to install the first time you run the command. The last line of output you will probably see
+  will be something like ``postgres_1  | LOG:  autovacuum launcher started`` or ``postgres_1  | LOG:  database system
+  is ready to accept connections``. That indicates that postgres is ready and
+  waiting. 
+
+* In another terminal, also at the root of the project, run: ``docker-compose -f dev.yml up --build mailhog npm
+  django``. You may have to wait quite some time before webpack finishes building the bundle of static files. If you
+  try to access the site before it's finished, you'll probably see a traceback for ``builtins.OSError: Error reading /app/webpack-stats.json. Are you sure webpack has generated the file and the path is correct?``. Once you see ``npm_1       | webpack: bundle is now VALID.``, your django/npm/mailhog server is running.
+
+* If you want to run any ``manage.py`` command (like ``migrate`` or ``shell_plus``), ensure the `django` container is up, and then run
+
+::
+
+  docker-compose -f dev.yml run django python /app/manage.py shell_plus
+
+Note: You may need to prepend those commands with `sudo`.
+
+.. _`Docker`: https://docs.docker.com/engine/installation/
+.. _`docker-compose`: https://docs.docker.com/compose/install/
+.. _`Mac version of Docker`: https://docs.docker.com/docker-for-mac/

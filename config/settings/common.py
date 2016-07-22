@@ -59,6 +59,7 @@ THIRD_PARTY_APPS = (
     'callisto.delivery',
     'callisto.evaluation',
     'webpack_loader',
+    'polymorphic',
 )
 
 # Apps specific for this project go here.

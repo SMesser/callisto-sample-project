@@ -53,6 +53,7 @@ django-webpack-loader==0.3.0
 sqlparse==0.1.19 # pyup: < 0.2
 
 # Your custom requirements go here
+zxcvbn-py3==1.1  # regular ol' zxcvbn has syntax errors if you run it on python 3
 git+https://github.com/SexualHealthInnovations/callisto-core.git@release-7.18.16
 pynacl==1.0.1
 django-polymorphic==0.9.2
@@ -61,5 +62,4 @@ django-wizard-builder==0.0.3
 django-grappelli==2.8.1
 reportlab==3.3.0
 django-ratelimit==1.0.0
-zxcvbn==1.0
 django-formtools==1.0

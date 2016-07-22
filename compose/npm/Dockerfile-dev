@@ -1,0 +1,17 @@
+FROM node:6
+
+COPY ./compose/npm/entrypoint.sh /entrypoint.sh
+RUN chmod +x /entrypoint.sh
+
+# Dependencies have to be pulled and installed here, otherwise caching won't work
+# RUN mkdir -p /tmp/npm/
+# COPY ./package.json /tmp/npm/package.json
+# WORKDIR /tmp/npm/
+# RUN npm install
+
+VOLUME /app
+WORKDIR /app
+# RUN npm install
+
+ENTRYPOINT ["/entrypoint.sh"]
+CMD ["run", "dev"]

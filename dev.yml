@@ -54,3 +54,12 @@ services:
     ports:
       - "8025:8025"
 
+
+  npm:
+    build:
+      context: .
+      dockerfile: ./compose/npm/Dockerfile-dev
+    ports:
+      - "8080:8080"
+    volumes:
+      - .:/app
