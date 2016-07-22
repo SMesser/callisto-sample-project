@@ -13,6 +13,7 @@ from __future__ import absolute_import, unicode_literals
 import environ
 import os
 
+from django.core.exceptions import ImproperlyConfigured
 from random import choice
 from string import printable
 from warnings import warn
@@ -24,7 +25,7 @@ env = environ.Env()
 # See: https://docs.djangoproject.com/en/dev/ref/settings/#secret-key
 try:
     SECRET_KEY = env('DJANGO_SECRET_KEY')
-except KeyError:
+except ImproperlyConfigured:
     SECRET_KEY = ''.join([choice(printable) for _ in xrange(30)])
     warn(
         'DJANGO_SECRET_KEY should be set as an environment variable to avoid forcibly logging out users when the server is restarted.'
