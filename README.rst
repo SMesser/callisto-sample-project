@@ -42,6 +42,12 @@ Make Callisto importable (may need to change the path to your virtual environmen
 
   $ touch ~/.virtualenvs/callisto-sample-project/lib/python2.7/site-packages/callisto/__init__.py
 
+Create the following GnuPG files. Callisto-core expects these to be real public keys, but you should be able to get a test system running with empty files:
+
+  config/settings/callisto_eval_publickey.gpg
+  config/settings/coordinator_publickey.gpg
+  config/settings/test_publickey.gpg
+
 Create a database::
 
   $ createdb callisto-sample-project
@@ -124,6 +130,20 @@ The `static project readme`_ contains a lot of information about React / Redux a
 
 
 
+Encryption
+^^^^^^^^^^
+
+The system currently expects three GnuPG public keys. (GnuPG is a variant of PGP.) These are stored in the `config/settings/` directory:
+
+  * callisto_eval_publickey.gpg - Callisto-Eval's public key, stored in Django setting CALLISTO_EVAL_PUBLIC_KEY. This is only used in production.
+  * coordinator_publickey.gpg - The public key for the representative ("coordinator") of the installing organization. It is stored in Django setting COORDINATOR_PUBLIC_KEY. This is only used in production.
+  * test_publickey.gpg - A test-relevant public key which is used in both the "local" and "test" configurations. This is stored in both settings CALLISTO_EVAL_PUBLIC_KEY and COORDINATOR_PUBLIC_KEY. It is *not* used in production.  
+
+Currently, all three files are expected and required at start-up, although they are only used as described above.
+
+GnuPG and PGP provide asymmetric encryption. Asymmetric encryption is appropriate when the sender and recipient of a message are separate people, and consists of both "private" and "public" keys. Messages encrypted with the "private" key can only be read by those holding the "public" key, authenticating the message's sender and contents. Messages encrypted with the "public" key can only be read using the "private" key, authenticating the recipient of a message and ensuring confidentiality.
+
+This application also uses symmetric encryption, in which there is only one key. Symmetric encryption is appropriate when "sender" and "recipient" are the same person, i.e. to store private data without letting others read it.
 
 
 
